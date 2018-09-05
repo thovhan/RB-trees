@@ -6,7 +6,6 @@
 
 int main()
 {
-	//
 	RBtree s;
 
 	Node* n1 = new Node(1);
@@ -25,8 +24,10 @@ int main()
 	s.insert(n2);	s.print();
 	s.insert(n3);	s.print();
 	s.insert(n4);	s.print();
-	s.insert(n5);	s.print();
-	s.insert(n6);	s.print();
+	s.insert(n5);	
+	s.print();
+	s.insert(n6);	
+	s.print();
 	s.insert(n7);	s.print();
 	s.insert(n8);	s.print();
 	s.insert(n9);	s.print();

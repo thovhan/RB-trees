@@ -36,7 +36,7 @@ RBtree::leftRotate(Node*& p)
 {
 	Node* p1 = p->rlink_;
 	p->rlink_ = p1->llink_;
-	p1->llink_->parent_ = p;
+		p1->llink_->parent_ = p;
 	if (p->parent_ == &NIL_)
 		tree_ = p1;
 	else
@@ -66,7 +66,127 @@ RBtree::rightRotate(Node*& p)
 void
 RBtree::balancingAfterInsertion(Node* p)
 {
-	//...should be implemented...
+	
+	Node * parent = &NIL_;
+	Node * gparent = &NIL_;
+
+	while ((p != tree_) && (p->color_ != BLACK) && (p->parent_->color_ == RED))
+	{
+		parent = p->parent_;
+		gparent = p->parent_->parent_;
+
+		// Parent of inserted node left child of gparent
+		if (parent == gparent->llink_)
+		{
+			Node * uncle = gparent->rlink_;
+			//Case 1
+			if (uncle != &NIL_ && uncle->color_ == RED)
+			{
+				gparent->color_ = RED;
+				parent->color_ = BLACK;
+				uncle->color_ = BLACK;
+				p = gparent;
+			}
+			else
+			{
+				// Case 2 : Not on same branch new_node-parent-gparent
+				if (p == parent->rlink_)
+				{
+					leftRotate(parent);
+					p = parent;
+					parent = p->parent_;
+				}
+				// Case 3 : On the same branch
+				rightRotate(gparent);
+				auto c = parent->color_;
+				parent->color_ = parent->rlink_->color_;
+				parent->rlink_->color_ = c;
+				p = parent;
+			}
+		}
+		// parent RIGHT of gparent
+		else
+		{
+			Node * uncle = gparent->llink_;
+			//Case 1
+			if (uncle != &NIL_ && uncle->color_ == RED)
+			{
+				gparent->color_ = RED;
+				parent->color_ = BLACK;
+				uncle->color_ = BLACK;
+				p = gparent;
+			}
+			else
+			{
+				// Case 2 : Not on same branch new_node-parent-gparent
+				if (p == parent->llink_)
+				{
+					rightRotate(parent);
+					p = parent;
+					parent = p->parent_;
+				}
+				// Case 3 : On the same branch
+				leftRotate(gparent);
+				auto c = parent->color_;
+				parent->color_ = parent->llink_->color_;
+				parent->llink_->color_ = c;
+				p = parent;
+			}
+		}
+	}
+
+	/*
+	
+	while ((p != tree_) && (p->color_ != BLACK) && (p->parent_->color_ == RED))
+	{
+		// Parent of inserted node LEFT child of grandparent
+		if (p->parent_ == p->parent_->parent_->llink_)
+		{
+			Node* y = p->parent_->parent_->rlink_;
+			if (y->color_ == RED)				// Case 1			
+			{
+				p->parent_->color_ = BLACK;
+				y->color_ = BLACK;
+				p->parent_->parent_->color_ = RED;
+				p = p->parent_->parent_;
+			}
+			else
+			{
+				if (p == p->parent_->rlink_)
+			{
+				p = p->parent_;				//Case 2
+				leftRotate(p->parent_);		//Case 2
+			}
+			p->parent_->color_ = BLACK;
+			p->parent_->parent_->color_ = RED;
+			rightRotate(p->parent_->parent_);				//Case 3
+		}
+		}
+		else
+		{
+			Node* y = p->parent_->parent_->llink_;
+			if (y->color_ == RED)				// Case 1			
+			{
+				p->parent_->color_ = BLACK;
+				y->color_ = BLACK;
+				p->parent_->parent_->color_ = RED;
+				p = p->parent_->parent_;
+			}	
+			else
+			{
+				if (p == p->parent_->llink_)
+				{
+					p = p->parent_;
+					rightRotate(p->parent_);		// Case 2
+				}
+				p->parent_->color_ = BLACK;
+				p->parent_->parent_->color_ = RED;
+				leftRotate(p->parent_->parent_);				//Case 3
+			}
+		}
+	}
+	*/
+	tree_->color_ = BLACK;
 }
 
 void
@@ -99,12 +219,15 @@ RBtree::insert(Node* node)
 	int key = node->key_;
 	while (current != &NIL_)
 	{
-		if (current->key_ == key) return; //isertion is not done
+		if (current->key_ == key) return; //insertion is not done
 		prev = current;
 		(key<current->key_) ? current = current->llink_ : current = current->rlink_;
 	}
 
-	node->color_ = RED, node->parent_ = prev, node->llink_ = node->rlink_ = &NIL_;
+	node->color_ = RED;
+	node->parent_ = prev;
+	node->llink_ = &NIL_;
+	node->rlink_ = &NIL_;
 
 	if (tree_ == &NIL_)
 	{
