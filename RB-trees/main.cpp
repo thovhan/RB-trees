@@ -6,6 +6,7 @@
 
 int main()
 {
+	//
 	RBtree s;
 
 	Node* n1 = new Node(1);
