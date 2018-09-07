@@ -192,7 +192,74 @@ RBtree::balancingAfterInsertion(Node* p)
 void
 RBtree::balancingAfterRemoval(Node* p)
 {
-	//...should be implemented...
+	while (p != tree_ && p->color_ == BLACK)
+	{
+		if (p == p->parent_->llink_)
+		{
+			auto w = p->parent_->rlink_;
+			if (w->color_ == RED)		//Case 1: Not terminal, transform to Case 2,3,4
+			{
+				w->color_ = BLACK;
+				p->parent_->color_ = RED;
+				leftRotate(p->parent_);
+				w = p->parent_->rlink_;
+			}
+			if (w->llink_->color_ == BLACK && w->rlink_->color_ == BLACK)		// Case 2: Color sibling as black and move extra blackness to parent
+			{
+				w->color_ = RED;
+				p = p->parent_;
+			}
+			else
+			{
+				if (w->rlink_->color_ == BLACK) // Case 3
+				{
+					w->llink_->color_ = BLACK;
+					w->color_ = RED;
+					rightRotate(w);
+					w = p->parent_->rlink_;
+				}
+				// Case 4:
+				w->color_ = p->parent_->color_;
+				p->parent_->color_ = BLACK;
+				w->rlink_->color_ = BLACK;
+				leftRotate(p->parent_);
+				p = tree_;
+			}
+		}
+		else
+		{
+			auto w = p->parent_->llink_;
+			if (w->color_ == RED)		//Case 1: Not terminal, transform to Case 2,3,4
+			{
+				w->color_ = BLACK;
+				p->parent_->color_ = RED;
+				rightRotate(p->parent_);
+				w = p->parent_->llink_;
+			}
+			if (w->rlink_->color_ == BLACK && w->llink_->color_ == BLACK)		// Case 2: Color sibling as black and move extra blackness to parent
+			{
+				w->color_ = RED;
+				p = p->parent_;
+			}
+			else
+			{
+				if (w->llink_->color_ == BLACK) // Case 3
+				{
+					w->rlink_->color_ = BLACK;
+					w->color_ = RED;
+					leftRotate(w);
+					w = p->parent_->llink_;
+				}
+				// Case 4:
+				w->color_ = p->parent_->color_;
+				p->parent_->color_ = BLACK;
+				w->llink_->color_ = BLACK;
+				rightRotate(p->parent_);
+				p = tree_;
+			}
+		}
+	}
+	p->color_ = BLACK;
 }
 
 //PUBLIC METHODS
